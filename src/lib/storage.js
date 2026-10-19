@@ -20,3 +20,10 @@ export async function markExported(publicIds) {
   for (const id of publicIds) e[id] = new Date().toISOString();
   await area().set({ exported: e });
 }
+
+// Zrušení označení (seznam byl v AVIFu smazán a má jít poslat znovu)
+export async function unmarkTransferred(subId) {
+  const t = await getTransferred();
+  delete t[subId];
+  await area().set({ transferred: t });
+}

@@ -1,7 +1,7 @@
 import { createEbird } from './lib/ebird.js';
 import { login, createAvif, reverseGeocode } from './lib/avif.js';
 import { checklistToAvif, avifListToEbirdRows, rowsToCsv, parseChecklistIds, checklistUrl } from './lib/convert.js';
-import { getSettings, saveSettings, getTransferred, markTransferred, getExported, markExported } from './lib/storage.js';
+import { getSettings, saveSettings, getTransferred, markTransferred, unmarkTransferred, getExported, markExported } from './lib/storage.js';
 
 const $ = (sel) => document.querySelector(sel);
 const VERSION = chrome.runtime.getManifest().version;
@@ -132,7 +132,8 @@ async function renderChecklists() {
     const c = p.conversion;
     const sendable = c && !p.error && !done;
     let badge = '';
-    if (done) badge = `<a class="badge done" href="${avifListUrl(done.publicId)}" target="_blank" rel="noopener">V AVIFu</a>`;
+    if (done) badge = `<a class="badge done" href="${avifListUrl(done.publicId)}" target="_blank" rel="noopener">V AVIFu</a>
+      <button class="link resend" title="Použij, když jsi seznam v AVIFu smazal(a)">Přenést znovu</button>`;
     else if (p.error) badge = `<span class="badge error">Nelze přenést</span>`;
     else if (c.unmatched.length) badge = `<span class="badge warn">${c.unmatched.length} druhů nespárováno</span>`;
     const when = p.checklist ? `${fmtDate(p.checklist.obsDt)}${c?.payload.timeStart ? ' ' + c.payload.timeStart : ''}` : subId;
@@ -158,6 +159,14 @@ async function renderChecklists() {
   $('#checklists').innerHTML = html.join('');
   $('#send-bar').hidden = ![...prepared.values()].some((p) => p.conversion && !p.error);
 }
+
+$('#checklists').addEventListener('click', async (ev) => {
+  if (!ev.target.classList.contains('resend')) return;
+  const subId = ev.target.closest('.card').dataset.sub;
+  if (!confirm('Opravdu přenést znovu? Pokud seznam v AVIFu pořád existuje, vznikne duplicita.')) return;
+  await unmarkTransferred(subId);
+  await renderChecklists();
+});
 
 $('#find').addEventListener('click', async () => {
   const status = $('#to-avif-status');

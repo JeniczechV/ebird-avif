@@ -18,6 +18,7 @@ button, .button { font: inherit; padding: 8px 14px; border-radius: 6px; border: 
 button.secondary, .button.secondary, .tab { background: transparent; color: var(--accent); }
 .tab { border-color: transparent; }
 .tab.active { border-color: var(--accent); }
+button.link { background: none; border: none; padding: 0 4px; color: var(--muted); font-size: 12px; text-decoration: underline; }
 button:disabled { opacity: .5; cursor: default; }
 fieldset { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 16px; margin: 0 0 16px; }
 legend { font-weight: 600; padding: 0 6px; }
