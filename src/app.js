@@ -197,8 +197,12 @@ $('#find').addEventListener('click', async () => {
   try {
     if (!settings.ebirdName) throw new Error('Nejdřív vyplň své jméno v eBirdu v záložce Účty.');
     const ebird = ebirdClient();
+    prepared = new Map();
+    $('#checklists').innerHTML = '';
+    $('#send-bar').hidden = true;
     setStatus(status, 'Hledám checklisty…');
-    const found = await ebird.findMine(settings.ebirdName, Number($('#days').value));
+    const found = await ebird.findMine(settings.ebirdName, Number($('#days').value), new Date(), (i, total, date) =>
+      setStatus(status, `Hledám checklisty: den ${i} z ${total} (${fmtDate(date)})…`));
     await loadChecklists(found.map((f) => ({ subId: f.subId, loc: { name: f.loc.name, latitude: f.loc.latitude, longitude: f.loc.longitude, countryCode: f.loc.countryCode } })));
   } catch (e) {
     setStatus(status, e.message, 'error');
