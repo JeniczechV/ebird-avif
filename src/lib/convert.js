@@ -23,6 +23,10 @@ function addMinutes(hhmm, minutes) {
 // eBird „howManyStr“ → AVIF count. „X“ (přítomen, bez počtu) → „min 1“.
 export const PRESENT_COUNT = 'min 1';
 
+// Formáty počtu, které AVIF přijímá (schema_count v API v3): „35“, „cca 40“, „min 12“, „max 11“, „>5“, „<10“, „12-25“
+const AVIF_COUNT = /^(?:\d{1,7}|cca ?\d{1,7}|(?:min\.?|>) ?\d{1,7}|(?:max\.?|<) ?\d{1,7}|\d{1,7} ?[-–] ?\d{1,7})$/;
+export const isValidAvifCount = (s) => AVIF_COUNT.test(String(s).trim());
+
 export function convertCount(howManyStr) {
   const s = String(howManyStr ?? '').trim();
   if (/^\d{1,7}$/.test(s)) return s;
@@ -35,7 +39,7 @@ export function convertCount(howManyStr) {
  * @param loc lokalita {name, latitude, longitude}
  * @param municipalityPartId z reversegeocode
  * @param taxonomy data/taxonomy.json
- * @returns {{payload, unmatched: string[], skippedCount: number}}
+ * @returns {{payload, presentOnly: number[], unmatched: string[], skippedCount: number}}
  */
 export function checklistToAvif(checklist, loc, municipalityPartId, taxonomy, version = '') {
   const [date, time] = checklist.obsDt.split(' ');
@@ -44,6 +48,7 @@ export function checklistToAvif(checklist, loc, municipalityPartId, taxonomy, ve
   const timeEnd = hasTime && checklist.durationHrs ? addMinutes(time, checklist.durationHrs * 60) : null;
 
   const items = [];
+  const presentOnly = []; // indexy položek, které měly v eBirdu „X“ – v náhledu jde počet upřesnit
   const unmatched = [];
   let skippedCount = 0;
   for (const o of checklist.obs || []) {
@@ -56,6 +61,7 @@ export function checklistToAvif(checklist, loc, municipalityPartId, taxonomy, ve
     const item = { taxonId };
     const count = convertCount(o.howManyStr);
     if (count) item.count = count;
+    if (count === PRESENT_COUNT) presentOnly.push(items.length);
     items.push(item);
   }
 
@@ -77,7 +83,7 @@ export function checklistToAvif(checklist, loc, municipalityPartId, taxonomy, ve
     source: SOURCE,
     sourceVersion: version,
   };
-  return { payload, unmatched, skippedCount };
+  return { payload, presentOnly, unmatched, skippedCount };
 }
 
 // ---------- AVIF → eBird (CSV ve formátu eBird Record Format) ----------

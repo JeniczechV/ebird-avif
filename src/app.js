@@ -1,6 +1,6 @@
 import { createEbird } from './lib/ebird.js';
 import { login, createAvif, reverseGeocode } from './lib/avif.js';
-import { checklistToAvif, avifListToEbirdRows, rowsToCsv, parseChecklistIds, checklistUrl } from './lib/convert.js';
+import { checklistToAvif, avifListToEbirdRows, rowsToCsv, parseChecklistIds, checklistUrl, isValidAvifCount } from './lib/convert.js';
 import { getSettings, saveSettings, getTransferred, markTransferred, unmarkTransferred, getExported, markExported } from './lib/storage.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -138,9 +138,20 @@ async function renderChecklists() {
     else if (c.unmatched.length) badge = `<span class="badge warn">${c.unmatched.length} druhů nespárováno</span>`;
     const when = p.checklist ? `${fmtDate(p.checklist.obsDt)}${c?.payload.timeStart ? ' ' + c.payload.timeStart : ''}` : subId;
     const where = p.loc ? `${esc(p.loc.name)}${p.unit ? ' · ' + esc(p.unit.municipalityPart.name) : ''}` : '';
+    const editable = new Set(c?.presentOnly || []);
     const species = c
-      ? c.payload.items.map((it) => `<li>${esc(taxonomy.avif[it.taxonId]?.[0])}${it.count ? ' – ' + esc(it.count) : ''}</li>`).join('') +
+      ? c.payload.items.map((it, i) => {
+          const name = esc(taxonomy.avif[it.taxonId]?.[0]);
+          if (editable.has(i)) {
+            return `<li class="editable">${name} – <input class="count" data-i="${i}" value="${esc(it.count || '')}" ${done ? 'disabled' : ''}
+              aria-label="Počet: ${name}" title="Např. min 300, cca 250, 120-150"></li>`;
+          }
+          return `<li>${name}${it.count ? ' – ' + esc(it.count) : ''}</li>`;
+        }).join('') +
         c.unmatched.map((code) => `<li class="unmatched">${esc(code)} – nemá protějšek v AVIFu, doplň ručně</li>`).join('')
+      : '';
+    const countHint = editable.size && !done
+      ? `<p class="hint">${editable.size} druhů má v eBirdu „X“ (bez počtu) a uloží se jako „min 1“. Počet můžeš upřesnit, třeba na „min 300“ nebo „cca 250“.</p>`
       : '';
     return `<div class="card" data-sub="${esc(subId)}">
       <header>
@@ -153,12 +164,25 @@ async function renderChecklists() {
         </div>
         ${badge}
       </header>
-      ${species ? `<details><summary>Náhled druhů</summary><ul class="species">${species}</ul></details>` : ''}
+      ${species ? `<details ${countHint ? 'open' : ''}><summary>Náhled druhů</summary>${countHint}<ul class="species">${species}</ul></details>` : ''}
     </div>`;
   });
   $('#checklists').innerHTML = html.join('');
   $('#send-bar').hidden = ![...prepared.values()].some((p) => p.conversion && !p.error);
 }
+
+// Upřesnění počtu u druhů, které měly v eBirdu „X“
+$('#checklists').addEventListener('input', (ev) => {
+  if (!ev.target.classList.contains('count')) return;
+  const input = ev.target;
+  const item = prepared.get(input.closest('.card').dataset.sub).conversion.payload.items[Number(input.dataset.i)];
+  const value = input.value.trim();
+  const valid = value === '' || isValidAvifCount(value);
+  input.classList.toggle('invalid', !valid);
+  if (!valid) return;
+  if (value) item.count = value;
+  else delete item.count;
+});
 
 $('#checklists').addEventListener('click', async (ev) => {
   if (!ev.target.classList.contains('resend')) return;
@@ -195,6 +219,8 @@ $('#send').addEventListener('click', async () => {
   const status = $('#to-avif-status');
   const selected = [...document.querySelectorAll('#checklists .card')].filter((c) => c.querySelector('input:checked')).map((c) => c.dataset.sub);
   if (!selected.length) return setStatus(status, 'Nic není vybráno.', 'warn');
+  const invalid = selected.filter((subId) => document.querySelector(`.card[data-sub="${subId}"] input.count.invalid`));
+  if (invalid.length) return setStatus(status, `Oprav počty označené červeně (${invalid.join(', ')}). AVIF bere např. 35, min 300, cca 250, 120-150.`, 'error');
   if (!confirm(`Odeslat ${selected.length} seznam(ů) do AVIFu? Budou veřejně viditelné podle nastavení tvého účtu.`)) return;
   const btn = $('#send');
   btn.disabled = true;

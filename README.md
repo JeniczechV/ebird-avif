@@ -75,6 +75,7 @@ Heslo se nikam neukládá. Rozšíření si drží jen přihlašovací token, po
 2. Vyber období (3 až 30 dní zpátky) a klikni na **Najít**. Rozšíření projde checklisty z Česka a vybere ty tvoje.
    - Konkrétní checklist načteš i přes **Nebo vlož odkazy na konkrétní checklisty**. Vlož odkaz typu `https://ebird.org/checklist/S123456789`, jde jich vložit víc najednou.
 3. U každého checklistu uvidíš datum, lokalitu, obec, počet druhů a jestli půjde o kompletní, nebo částečný seznam. Po rozkliknutí **Náhled druhů** uvidíš česká jména a počty, přesně jak se uloží do AVIFu.
+   - Druhy, které máš v eBirdu jako „X“ (bez počtu), se uloží jako „min 1“. V náhledu u nich je políčko, kde počet můžeš upřesnit, třeba na `min 300`, `cca 250` nebo `120-150`. Nepovolený zápis se označí červeně a seznam se neodešle, dokud ho neopravíš.
 4. Zaškrtni checklisty, které chceš přenést. Ty, které už v AVIFu jsou, mají štítek **V AVIFu** a zaškrtnout nejdou.
 5. Klikni na **Odeslat vybrané do AVIFu** a potvrď.
 
@@ -114,7 +115,7 @@ eBird neumožňuje aplikacím zapisovat data přímo. Rozšíření proto připr
 | stacionární protokol | režim „bod“, jinak „oblast“ |
 | lokalita | souřadnice a název lokality, obec se určí podle souřadnic |
 | ušlá vzdálenost, počet pozorovatelů | ušlá vzdálenost, počet pozorovatelů |
-| počet | počet; „X“ (přítomen, bez počtu) se uloží jako „min 1“ |
+| počet | počet; „X“ (přítomen, bez počtu) se uloží jako „min 1“, v náhledu jde upřesnit |
 | — | poznámka „Převedeno z eBirdu“ s odkazem na checklist |
 
 Nepřenáší se: komentáře k druhům a k checklistu, fotky a zvukové nahrávky, věk a pohlaví, hnízdní kódy. eBird je aplikacím nezpřístupňuje. Doplnit je můžeš v AVIFu ručně.

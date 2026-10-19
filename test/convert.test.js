@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checklistToAvif, avifListToEbirdRows, rowsToCsv, parseChecklistIds, convertCount } from '../src/lib/convert.js';
+import { checklistToAvif, avifListToEbirdRows, rowsToCsv, parseChecklistIds, convertCount, isValidAvifCount } from '../src/lib/convert.js';
 
 const json = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
 const taxonomy = json('../data/taxonomy.json');
@@ -11,6 +11,11 @@ const avifList = json('./fixtures/avif-list.json');
 
 test('ID checklistů z textu i odkazů', () => {
   assert.deepEqual(parseChecklistIds('https://ebird.org/checklist/S403294570, S1234567 S403294570'), ['S403294570', 'S1234567']);
+});
+
+test('formáty počtu pro AVIF', () => {
+  for (const ok of ['35', 'min 300', 'min. 12', 'cca 40', 'max 11', '>5', '<10', '12-25', '12 – 25']) assert.ok(isValidAvifCount(ok), ok);
+  for (const bad of ['', 'X', 'hodně', 'min', '300+', 'cca']) assert.ok(!isValidAvifCount(bad), bad);
 });
 
 test('počty', () => {
@@ -37,6 +42,10 @@ test('eBird checklist → AVIF seznam', () => {
   assert.equal(swan.count, '1');
   assert.equal(payload.items.find((i) => i.taxonId === taxonomy.e2a.gragoo).count, 'min 1');
   assert.match(payload.note, /S403294570/);
+  // položky s „X“ jsou označené k upřesnění v náhledu
+  const { presentOnly } = checklistToAvif(checklist, loc, 6046370, taxonomy);
+  assert.equal(presentOnly.length, checklist.obs.filter((o) => o.howManyStr === 'X').length);
+  for (const i of presentOnly) assert.equal(payload.items[i].count, 'min 1');
 });
 
 test('nespárovaný druh udělá seznam neúplným', () => {
