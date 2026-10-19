@@ -1,0 +1,13 @@
+{
+  "name": "ebird-avif",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Rozšíření prohlížeče pro přenos pozorování ptáků mezi eBirdem a AVIFem",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "taxonomy": "node tools/build-taxonomy.mjs",
+    "zip": "zip -r ebird-avif.zip manifest.json _locales icons data src -x \"src/lib/taxonomy-build.js\""
+  },
+  "license": "MIT"
+}

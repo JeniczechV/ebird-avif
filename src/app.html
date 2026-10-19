@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>eBird ↔ AVIF</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header>
+    <h1>eBird ↔ AVIF</h1>
+    <nav>
+      <button class="tab" data-tab="to-avif">eBird → AVIF</button>
+      <button class="tab" data-tab="to-ebird">AVIF → eBird</button>
+      <button class="tab" data-tab="settings">Účty</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="settings" hidden>
+      <h2>Propojení účtů</h2>
+      <p class="hint">Všechno zůstává jen v tomhle prohlížeči. Heslo k birds.cz se neukládá, rozšíření si drží jen přihlašovací token.</p>
+
+      <fieldset>
+        <legend>eBird</legend>
+        <label>API klíč
+          <input id="ebird-key" type="password" autocomplete="off" placeholder="z ebird.org/api/keygen">
+        </label>
+        <p class="hint">Klíč získáš za minutu na <a href="https://ebird.org/api/keygen" target="_blank" rel="noopener">ebird.org/api/keygen</a>. Do popisu stačí napsat, že ho používáš pro přenos vlastních pozorování do AVIFu.</p>
+        <label>Jméno v eBirdu
+          <input id="ebird-name" type="text" placeholder="přesně jak se zobrazuje u checklistů, např. Jan Novák">
+        </label>
+        <button id="ebird-save">Uložit a ověřit</button>
+        <span id="ebird-status" class="status"></span>
+      </fieldset>
+
+      <fieldset>
+        <legend>AVIF (účet birds.cz)</legend>
+        <div id="avif-logged" hidden>
+          <p>Přihlášen jako <strong id="avif-user"></strong>.</p>
+          <button id="avif-logout" class="secondary">Odhlásit</button>
+        </div>
+        <form id="avif-login">
+          <label>Uživatelské jméno <input id="avif-username" type="text" autocomplete="username"></label>
+          <label>Heslo <input id="avif-password" type="password" autocomplete="current-password"></label>
+          <button type="submit">Přihlásit</button>
+        </form>
+        <span id="avif-status" class="status"></span>
+      </fieldset>
+    </section>
+
+    <section id="to-avif" hidden>
+      <h2>Z eBirdu do AVIFu</h2>
+      <div class="toolbar">
+        <label>Moje checklisty v ČR za posledních
+          <select id="days">
+            <option value="3">3 dny</option>
+            <option value="7" selected>7 dní</option>
+            <option value="14">14 dní</option>
+            <option value="30">30 dní</option>
+          </select>
+        </label>
+        <button id="find">Najít</button>
+      </div>
+      <details>
+        <summary>Nebo vlož odkazy na konkrétní checklisty</summary>
+        <textarea id="ids" rows="3" placeholder="https://ebird.org/checklist/S123456789 (jeden nebo víc)"></textarea>
+        <button id="load-ids">Načíst</button>
+      </details>
+      <p id="to-avif-status" class="status"></p>
+      <div id="checklists"></div>
+      <div class="actions" id="send-bar" hidden>
+        <button id="send">Odeslat vybrané do AVIFu</button>
+        <span class="hint">Seznamy v AVIFu jsou veřejné. Před odesláním zkontroluj náhled.</span>
+      </div>
+    </section>
+
+    <section id="to-ebird" hidden>
+      <h2>Z AVIFu do eBirdu</h2>
+      <p class="hint">eBird neumožňuje zápis přes API. Rozšíření vytvoří soubor CSV a ty ho nahraješ na <a href="https://ebird.org/import/upload.form?theme=ebird" target="_blank" rel="noopener">ebird.org/import</a> (formát „eBird Record Format (Extended)“).</p>
+      <div class="toolbar">
+        <label>Moje seznamy za posledních
+          <select id="avif-days">
+            <option value="7">7 dní</option>
+            <option value="30" selected>30 dní</option>
+            <option value="90">90 dní</option>
+            <option value="365">rok</option>
+          </select>
+        </label>
+        <button id="avif-find">Načíst</button>
+      </div>
+      <p id="to-ebird-status" class="status"></p>
+      <div id="avif-lists"></div>
+      <div class="actions" id="export-bar" hidden>
+        <button id="export">Stáhnout CSV pro eBird</button>
+        <a class="button secondary" href="https://ebird.org/import/upload.form?theme=ebird" target="_blank" rel="noopener">Otevřít import v eBirdu</a>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

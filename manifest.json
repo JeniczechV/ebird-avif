@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "eBird ↔ AVIF",
+  "short_name": "eBird-AVIF",
+  "version": "0.1.0",
+  "description": "Přenos pozorování ptáků mezi eBirdem a českou databází AVIF (avif.birds.cz).",
+  "default_locale": "cs",
+  "action": { "default_title": "eBird ↔ AVIF" },
+  "background": { "service_worker": "src/background.js", "type": "module" },
+  "permissions": ["storage", "unlimitedStorage"],
+  "host_permissions": [
+    "https://api.ebird.org/*",
+    "https://avif.birds.cz/*",
+    "https://login.birds.cz/*",
+    "https://projekty.birds.cz/*"
+  ],
+  "icons": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" }
+}

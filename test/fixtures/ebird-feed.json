@@ -1,0 +1,28 @@
+[
+ {
+  "locId": "L4994525",
+  "subId": "S403294570",
+  "userDisplayName": "Jan Valach",
+  "numSpecies": 20,
+  "obsDt": "18 Oct 2026",
+  "obsTime": "09:35",
+  "isoObsDate": "2026-10-18 09:35",
+  "subID": "S403294570",
+  "loc": {
+   "locId": "L4994525",
+   "name": "NPR Lednické rybníky--Hlohovecký rybník",
+   "latitude": 48.7799206,
+   "longitude": 16.7743206,
+   "countryCode": "CZ",
+   "countryName": "Czech Republic",
+   "subnational1Name": "Jihomoravský kraj",
+   "subnational1Code": "CZ-JM",
+   "isHotspot": true,
+   "locID": "L4994525",
+   "locName": "NPR Lednické rybníky--Hlohovecký rybník",
+   "lat": 48.7799206,
+   "lng": 16.7743206,
+   "hierarchicalName": "NPR Lednické rybníky--Hlohovecký rybník, Jihomoravský kraj, CZ"
+  }
+ }
+]
