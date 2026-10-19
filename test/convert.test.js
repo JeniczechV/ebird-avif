@@ -15,7 +15,8 @@ test('ID checklistů z textu i odkazů', () => {
 
 test('počty', () => {
   assert.equal(convertCount('12'), '12');
-  assert.equal(convertCount('X'), null);
+  assert.equal(convertCount('X'), 'min 1');
+  assert.equal(convertCount(''), null);
 });
 
 test('eBird checklist → AVIF seznam', () => {
@@ -31,10 +32,10 @@ test('eBird checklist → AVIF seznam', () => {
   assert.equal(payload.observersNumber, 2);
   assert.equal(payload.municipalityPartId, 6046370);
   assert.equal(payload.items.length, checklist.obs.length);
-  // „X“ se posílá bez počtu, číslo s počtem
+  // „X“ se posílá jako „min 1“, číslo beze změny
   const swan = payload.items.find((i) => i.taxonId === taxonomy.e2a.mutswa);
   assert.equal(swan.count, '1');
-  assert.equal(payload.items.find((i) => i.taxonId === taxonomy.e2a.gragoo).count, undefined);
+  assert.equal(payload.items.find((i) => i.taxonId === taxonomy.e2a.gragoo).count, 'min 1');
   assert.match(payload.note, /S403294570/);
 });
 
@@ -56,6 +57,10 @@ test('AVIF seznam → CSV pro eBird', () => {
   assert.equal(rows[0][14], 26);
   assert.equal(rows[0][15], 'Y');
   assert.ok(rowsToCsv(rows).endsWith('\r\n'));
+  // „min 1“ (eBirdí „X“) se vrací jako „X“, ostatní „min N“ jako N
+  const one = (count) => avifListToEbirdRows({ ...avifList, items: [{ taxonId: 807, count }] }, '', taxonomy).rows[0][3];
+  assert.equal(one('min 1'), 'X');
+  assert.equal(one('min 12'), '12');
 });
 
 test('párování běžných druhů oběma směry', () => {

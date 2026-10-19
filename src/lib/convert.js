@@ -20,10 +20,13 @@ function addMinutes(hhmm, minutes) {
   return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
 }
 
-// eBird „howManyStr“ → AVIF count. „X“ (bez počtu) → null.
+// eBird „howManyStr“ → AVIF count. „X“ (přítomen, bez počtu) → „min 1“.
+export const PRESENT_COUNT = 'min 1';
+
 export function convertCount(howManyStr) {
   const s = String(howManyStr ?? '').trim();
-  return /^\d{1,7}$/.test(s) ? s : null;
+  if (/^\d{1,7}$/.test(s)) return s;
+  return s.toUpperCase() === 'X' ? PRESENT_COUNT : null;
 }
 
 /**
@@ -106,9 +109,11 @@ function minutesBetween(a, b) {
 }
 
 // AVIF count → eBird Number. Jen přesné číslo, jinak „X“ (přítomen).
+// „min 1“ je v AVIFu náš zápis eBirdího „X“, takže se vrací zpět jako „X“.
 function ebirdNumber(count) {
   const s = String(count ?? '').trim();
   if (/^\d+$/.test(s)) return s;
+  if (/^min\.?\s?1$/.test(s)) return 'X';
   const m = s.match(/^(?:cca|min\.?|>)\s?(\d+)$/);
   return m ? m[1] : 'X';
 }

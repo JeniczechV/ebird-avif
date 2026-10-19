@@ -114,7 +114,7 @@ eBird neumožňuje aplikacím zapisovat data přímo. Rozšíření proto připr
 | stacionární protokol | režim „bod“, jinak „oblast“ |
 | lokalita | souřadnice a název lokality, obec se určí podle souřadnic |
 | ušlá vzdálenost, počet pozorovatelů | ušlá vzdálenost, počet pozorovatelů |
-| počet | počet; „X“ (bez počtu) se uloží bez počtu |
+| počet | počet; „X“ (přítomen, bez počtu) se uloží jako „min 1“ |
 | — | poznámka „Převedeno z eBirdu“ s odkazem na checklist |
 
 Nepřenáší se: komentáře k druhům a k checklistu, fotky a zvukové nahrávky, věk a pohlaví, hnízdní kódy. eBird je aplikacím nezpřístupňuje. Doplnit je můžeš v AVIFu ručně.
@@ -128,7 +128,7 @@ Nepřenáší se: komentáře k druhům a k checklistu, fotky a zvukové nahráv
 | seznam bez času | příležitostné pozorování |
 | ušlá vzdálenost | protokol „Traveling“ se vzdáleností, jinak „Stationary“ |
 | počet „35“, „cca 40“, „min 12“ | 35, 40, 12 |
-| rozpětí nebo „max“ | X (přítomen) |
+| „min 1“, rozpětí nebo „max“ | X (přítomen) |
 | poznámky | komentáře, plus odkaz na seznam v AVIFu |
 
 ### Druhy
